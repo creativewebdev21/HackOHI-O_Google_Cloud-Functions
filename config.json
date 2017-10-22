@@ -1,0 +1,7 @@
+{
+  "RESULT_TOPIC": "[nameplate-topic-name]",
+  "RESULT_BUCKET": "[hackohio_text_bucket]",
+  "TRANSLATE_TOPIC": "[nameplate-translation-topic]",
+  "TRANSLATE": true,
+  "TO_LANG": ["en", "fr", "es", "ja", "ru"]
+}
