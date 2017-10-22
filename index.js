@@ -58,14 +58,16 @@ function detectText (bucketName, filename) {
         var ref = db.ref("images");
         var brand = getBrandName(text);
         var catalogueNum = getCatalogueNum(text);
+        var orderNum = getOrderNum(text);
         console.log("Brand:" + brand);
         console.log("CAT NO:" + catalogueNum);
+        console.log("GO/PO#:" + orderNum);
         ref.child("mostRecent").set({
           text: {
             raw: text,
-            brand: "brand_filler",
-            catalogue: 'catalogue#_ holder',
-            orderNum: 'GO# or PO#'
+            brand: brand,
+            catalogue: catalogueNum,
+            orderNum: orderNum
           }
         });
     })
@@ -154,6 +156,29 @@ function getCatalogueNum(text) {
    }
  }
  return catalogue;
+}
+
+/**
+ * Recognizes Order number
+ *
+ * @param {string} text the provided text to sort
+*/
+function getOrderNum(text) {
+ var order = "";
+ if (text.indexOf("GO#") > -1) {
+   order = text.substring(text.indexOf("GO#") + 4);
+   order = removeAfterFirstSpace(order);
+ } else if (text.indexOf("PO#") > -1) {
+   order = text.substring(text.indexOf("PO#") + 4);
+   order = removeAfterFirstSpace(order);
+ } else if (text.indexOf("General Order") > -1) {
+   order = text.substring(text.indexOf("General Order") + 14);
+   order = removeAfterFirstSpace(order);
+ } else {
+   order = "No ORDER found";
+   console.log(order);
+ }
+ return order;
 }
 
 /**
