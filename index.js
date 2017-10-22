@@ -143,11 +143,14 @@ function getCatalogueNum(text) {
  } else if (text.indexOf("Cat. No.") > -1) {
    catalogue = text.substring(text.indexOf("Cat. No.") + 9);
    catalogue = removeAfterFirstSpace(catalogue);
+ } else if (text.indexOf("STYLE") > -1) {
+   catalogue = text.substring(text.indexOf("STYLE") + 6);
+   catalogue = removeAfterFirstSpace(catalogue);
  } else {
    console.log("No category found");
    catalogue = text;
    while (catalogue.charCodeAt(catalogue.length-1) <= 47 || catalogue.charCodeAt(catalogue.length-1) >= 58) {//Remove trailing text, leaving number
-     catalogue = catalogue.substring(0, catalogue.length-2);
+     catalogue = catalogue.substring(0, catalogue.length-1);
    }
    for(var i = catalogue.length-1; i > 0; i--) {//Remove leading chars/whitespace
      if (catalogue.charCodeAt(i) <= 32) {
@@ -164,7 +167,7 @@ function getCatalogueNum(text) {
  * @param {string} text the provided text to sort
 */
 function getOrderNum(text) {
- var order = "";
+ var order = "No PO/GO # found";
  if (text.indexOf("GO#") > -1) {
    order = text.substring(text.indexOf("GO#") + 4);
    order = removeAfterFirstSpace(order);
