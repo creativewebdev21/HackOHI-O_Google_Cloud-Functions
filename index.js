@@ -174,6 +174,9 @@ function getOrderNum(text) {
  } else if (text.indexOf("PO#") > -1) {
    order = text.substring(text.indexOf("PO#") + 4);
    order = removeAfterFirstSpace(order);
+ } else if (text.indexOf("G.0.") > -1) {
+   order = text.substring(text.indexOf("PO#") + 5);
+   order = removeAfterFirstSpace(order);
  } else if (text.indexOf("General Order") > -1) {
    order = text.substring(text.indexOf("General Order") + 14);
    order = removeAfterFirstSpace(order);
