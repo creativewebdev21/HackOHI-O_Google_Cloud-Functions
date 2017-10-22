@@ -56,6 +56,8 @@ function detectText (bucketName, filename) {
         // database reference
         var db = admin.database();
         var ref = db.ref("images");
+        var brand = getBrandName(text);
+        console.log(brand);
         ref.child("mostRecent").set({
           text: {
             raw: text,
@@ -65,30 +67,6 @@ function detectText (bucketName, filename) {
           }
         });
     })
-.then(([detection]) => {
-if (Array.isArray(detection)) {
-  detection = detection[0];
-}
-console.log(`Detected language "${detection.language}" for ${filename}`);
-
-// Submit a message to the bus for each language we're going to translate to
-const tasks = config.TO_LANG.map((lang) => {
-  let topicName = "nameplateTranslationTopic";
-  if (detection.language === lang) {
-  topicName = "nameplateResultTopic";
-}
-const messageData = {
-  text: text,
-  filename: filename,
-  lang: lang,
-  from: detection.language
-};
-
-return publishResult(topicName, messageData);
-});
-
-return Promise.all(tasks);
-});
 }
 // [END functions_ocr_detect]
 
@@ -122,3 +100,28 @@ return Promise.all(tasks);
      });
  };
  // [END functions_ocr_process]
+
+ /**
+  * Recognizes brand name
+  *
+  * @param {string} text the provided text to sort
+ */
+function getBrandName(text) {
+  var brand = "";
+  if (text.indexOf('TM') > -1) {//TM appears
+    var end = text.indexOf('TM');
+    var foundLastSpace = false;
+    for (var i = end; i > 0; i--) {
+      if (text.charCodeAt(i) <= 32 && !foundLastSpace) {
+        foundLastSpace = true;
+        brand = text.substring(i+1,end);
+      }
+    }
+  } else if (text.indexOf("UNIVAR") > -1) {
+    console.log("UNIVAR FOUND at pos: " + text.indexOf("UNIVAR"));
+  }
+  if (brand.length < 3) {
+    brand = "EATON";
+  }
+  return brand;
+}
