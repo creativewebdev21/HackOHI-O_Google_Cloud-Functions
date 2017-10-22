@@ -57,7 +57,9 @@ function detectText (bucketName, filename) {
         var db = admin.database();
         var ref = db.ref("images");
         var brand = getBrandName(text);
-        console.log(brand);
+        var catalogueNum = getCatalogueNum(text);
+        console.log("Brand:" + brand);
+        console.log("CAT NO:" + catalogueNum);
         ref.child("mostRecent").set({
           text: {
             raw: text,
@@ -124,4 +126,47 @@ function getBrandName(text) {
     brand = "EATON";
   }
   return brand;
+}
+
+/**
+ * Recognizes catalogue number
+ *
+ * @param {string} text the provided text to sort
+*/
+function getCatalogueNum(text) {
+ var catalogue = "";
+ if (text.indexOf("CAT") > -1) {
+   catalogue = text.substring(text.indexOf("CAT NO") + 7);
+   catalogue = removeAfterFirstSpace(catalogue);
+ } else if (text.indexOf("Cat. No.") > -1) {
+   catalogue = text.substring(text.indexOf("Cat. No.") + 9);
+   catalogue = removeAfterFirstSpace(catalogue);
+ } else {
+   console.log("No category found");
+   catalogue = text;
+   while (catalogue.charCodeAt(catalogue.length-1) <= 47 || catalogue.charCodeAt(catalogue.length-1) >= 58) {//Remove trailing text, leaving number
+     catalogue = catalogue.substring(0, catalogue.length-2);
+   }
+   for(var i = catalogue.length-1; i > 0; i--) {//Remove leading chars/whitespace
+     if (catalogue.charCodeAt(i) <= 32) {
+       catalogue = catalogue.substring(i+1);
+     }
+   }
+ }
+ return catalogue;
+}
+
+/**
+ * Returns first word only from string
+ *
+ * @param {string} text the provided text to sort
+*/
+function removeAfterFirstSpace(string) {
+  var strNoSpace = string;
+  for(var i = 0; i < strNoSpace.length; i++) {//Remove trailing chars/whitespace
+    if (strNoSpace.charCodeAt(i) <= 32) {
+      strNoSpace = strNoSpace.substring(0, i);
+    }
+  }
+  return strNoSpace;
 }
